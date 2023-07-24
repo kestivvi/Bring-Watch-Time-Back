@@ -33,11 +33,12 @@ chrome.runtime.onMessage.addListener((message, sender) => {
   switch (message.type) {
 
     case MessageType.PLAY:
-      tabs.set(tab.id, tab)
+      // FIXME: For some reason this url becomes stale
       onPlay(message.payload, url)
       break;
 
     case MessageType.PAUSE:
+      // FIXME: For some reason this url becomes stale
       onPause(message.payload, url)
       break;
 
@@ -70,6 +71,27 @@ chrome.tabs.onRemoved.addListener(async (tabId, removed) => {
 chrome.windows.onRemoved.addListener(async (windowId) => {
   console.log("WINDOW_CLOSED", windowId)
 })
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  tabs.set(tabId, tab)
+  // console.log("onUpdated tab from store", tabs.get(tabId)?.url)
+
+  if (changeInfo.status === 'complete') {
+    console.log("Page Load Complete", tab.url)
+    chrome.tabs.sendMessage(tabId, {
+      type: 'PAGE_LOAD_COMPLETE',
+      url: tab.url
+    })
+  }
+
+  if (changeInfo.url) {
+    console.log("onUpdatedURL", tab.url)
+    chrome.tabs.sendMessage(tabId, {
+      type: 'URL_CHANGED',
+    })
+  }
+}
+);
 
 // import { MessageType } from "./message";
 

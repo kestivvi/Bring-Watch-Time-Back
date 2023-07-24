@@ -4,24 +4,28 @@ console.log("Bring watch time back loaded");
 
 type State = {
   type: "PLAYING" | "PAUSED" | null,
-  time: number | null
+  time: number | null,
+  video: HTMLVideoElement | null,
+  url: string | null,
 }
 
 const timeDelta = 2000
 
 let state: State = {
   type: null,
-  time: null
+  time: null,
+  video: null,
+  url: null,
 }
 
 const onPlay = () => {
-  console.log("BWTB Odtwarzanie sie zaczeło", document.URL);
-  chrome.runtime.sendMessage({ type: MessageType.PLAY, payload: `BWTB Start from ${document.URL}` })
+  console.log("BWTB Odtwarzanie sie zaczeło");
+  chrome.runtime.sendMessage({ type: MessageType.PLAY })
 };
 
 const onPause = () => {
-  console.log("BWTB Odtwarzanie sie spauzowało", document.URL);
-  chrome.runtime.sendMessage({ type: MessageType.PAUSE, payload: `BWTB Pause from ${document.URL}` })
+  console.log("BWTB Odtwarzanie sie spauzowało");
+  chrome.runtime.sendMessage({ type: MessageType.PAUSE })
 };
 
 const check = () => {
@@ -50,14 +54,50 @@ const onTimeUpdate = () => {
   setTimeout(check, timeDelta)
 }
 
-
-const video = document.getElementsByTagName("video")[0];
-video.addEventListener("timeupdate", onTimeUpdate);
-video.addEventListener("play", onTimeUpdate);
-video.addEventListener("pause", () => {
+const quickPause = () => {
   state.type = "PAUSED"
   onPause()
-});
+}
+
+const setupVideo = () => {
+  const video = document.getElementsByTagName("video")[0];
+
+  video.addEventListener("timeupdate", onTimeUpdate);
+  video.addEventListener("play", onTimeUpdate);
+  video.addEventListener("pause", quickPause);
+
+  state.video = video;
+
+  return video
+}
+
+// const video = document.getElementsByTagName("video")[0];
+// video.addEventListener("timeupdate", onTimeUpdate);
+// video.addEventListener("play", onTimeUpdate);
+// video.addEventListener("pause", () => {
+//   state.type = "PAUSED"
+//   onPause()
+// });
+
+// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+//   if (message.type === "URL_CHANGED") {
+//     getAndHookVideoElement()
+//   }
+// })
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "PAGE_LOAD_COMPLETE") {
+    if (state.url !== message.url) {
+
+      state.video?.removeEventListener("timeupdate", onTimeUpdate);
+      state.video?.removeEventListener("play", onTimeUpdate);
+      state.video?.removeEventListener("pause", quickPause);
+
+      state.url = message.url
+      setupVideo()
+    }
+  }
+})
 
 // It doesnt work :(
 // document.addEventListener("onunload", (e) => {
