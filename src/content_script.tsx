@@ -1,4 +1,4 @@
-import { MessageType } from "./message";
+import { MessageType } from "./background/message";
 
 console.log("Bring watch time back loaded");
 
