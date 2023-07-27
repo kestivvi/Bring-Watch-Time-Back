@@ -4,14 +4,21 @@ import { getTabFromStorage, setTabToStorage, deleteTabFromStorage } from "./tabs
 
 
 // Handling messages from the content scripts
-const onMessageHandler = (
+const onMessageHandler = async (
     message: any,
     sender: chrome.runtime.MessageSender,
     sendResponse: (response?: any) => void,
-): void => {
+): Promise<void> => {
 
     const url = sender.tab?.url
 
+    if (message.type == MessageType.OPEN_IN_TAB) {
+        const x = chrome.runtime.getURL("index.html")
+        console.log("undefined url", x)
+        await chrome.tabs.create({
+            url: x,
+        });
+    }
 
     // Null checks and early returns
     if (url === undefined) {
@@ -50,6 +57,13 @@ const onUpdatedTabHandler = (
     if (changeInfo.status === 'complete') {
         chrome.tabs.sendMessage(tabId, {
             type: 'PAGE_LOAD_COMPLETE',
+            url: tab.url
+        })
+    }
+
+    if (changeInfo.status === 'url') {
+        chrome.tabs.sendMessage(tabId, {
+            type: 'URL_CHANGED',
             url: tab.url
         })
     }

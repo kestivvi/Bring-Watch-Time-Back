@@ -68,6 +68,13 @@ const Popup = () => {
         count up
       </button>
       <button onClick={changeBackground}>change background</button>
+
+      <button onClick={() => {
+        chrome.runtime.sendMessage({ type: "OPEN_IN_TAB" })
+      }}>
+        Open in new tab
+      </button>
+
       <ul>
         {events.map((event, index) => (
           <li>{JSON.stringify(event)}</li>

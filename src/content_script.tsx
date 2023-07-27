@@ -7,7 +7,7 @@ type State = {
   url: string | null,
 }
 
-const timeDelta = 2000
+const timeDelta = 1000
 
 let state: State = {
   type: null,
@@ -83,6 +83,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
       state.url = message.url
       setupVideo()
+    }
+  }
+
+  if (message.type === "URL_CHANGED") {
+    if (state.type !== "PAUSED") {
+      check()
     }
   }
 })
