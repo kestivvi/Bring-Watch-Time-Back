@@ -1,9 +1,7 @@
 import { onPause, onPlay } from "./events"
 import { MessageType } from "./message"
+import { getTabFromStorage, setTabToStorage, deleteTabFromStorage } from "./tabs_storage"
 
-// TODO: Global variables do not persist. We need to use local storage
-// Service workers are terminated often during browser session
-const tabs = new Map<number, chrome.tabs.Tab>()
 
 const onMessageHandler = (
     message: any,
@@ -11,9 +9,7 @@ const onMessageHandler = (
     sendResponse: (response?: any) => void,
 ): void => {
 
-    // Variables definition
-    const url = sender.url
-    const tab = sender.tab
+    const url = sender.tab?.url
 
 
     // Null checks and early returns
@@ -22,27 +18,15 @@ const onMessageHandler = (
         return;
     }
 
-    if (tab === undefined) {
-        console.error("Tab is undefined", message, sender)
-        return;
-    }
-
-    if (tab.id === undefined) {
-        console.error("TabId is undefined", message, sender)
-        return;
-    }
-
 
     // Dispatcher via switch statement
     switch (message.type) {
 
         case MessageType.PLAY:
-            // FIXME: For some reason this url becomes stale
             onPlay(message.payload, url)
             break;
 
         case MessageType.PAUSE:
-            // FIXME: For some reason this url becomes stale
             onPause(message.payload, url)
             break;
 
@@ -53,15 +37,16 @@ const onMessageHandler = (
     }
 }
 
-const onRemovedTabHandler = (
+const onRemovedTabHandler = async (
     tabId: number,
     removeInfo: chrome.tabs.TabRemoveInfo
-): void => {
+): Promise<void> => {
 
-    const tab = tabs.get(tabId)
+    const tab = await getTabFromStorage(tabId)
+
     console.log("TAB_CLOSED", tab)
 
-    if (tab === undefined) {
+    if (tab === null) {
         console.error("Tab is undefined!")
         return
     }
@@ -72,7 +57,7 @@ const onRemovedTabHandler = (
     }
 
     onPause({ tabClosed: true }, tab.url)
-    tabs.delete(tabId)
+    deleteTabFromStorage(tabId)
 }
 
 const onRemovedWindowHandler = (
@@ -86,7 +71,7 @@ const onUpdatedTabHandler = (
     changeInfo: chrome.tabs.TabChangeInfo,
     tab: chrome.tabs.Tab,
 ): void => {
-    tabs.set(tabId, tab)
+    setTabToStorage(tab)
 
     if (changeInfo.status === 'complete') {
         console.log("Page Load Complete", tab.url)
