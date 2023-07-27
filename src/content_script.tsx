@@ -1,7 +1,5 @@
 import { MessageType } from "./background/message";
 
-console.log("Bring watch time back loaded");
-
 type State = {
   type: "PLAYING" | "PAUSED" | null,
   time: number | null,
@@ -18,15 +16,16 @@ let state: State = {
   url: null,
 }
 
+
 const onPlay = () => {
-  console.log("BWTB Odtwarzanie sie zaczeło");
   chrome.runtime.sendMessage({ type: MessageType.PLAY })
 };
 
+
 const onPause = () => {
-  console.log("BWTB Odtwarzanie sie spauzowało");
   chrome.runtime.sendMessage({ type: MessageType.PAUSE })
 };
+
 
 const check = () => {
   if (state.type === null) {
@@ -38,6 +37,7 @@ const check = () => {
     }
   } else if (state.type === "PAUSED") { }
 }
+
 
 const onTimeUpdate = () => {
 
@@ -59,6 +59,7 @@ const quickPause = () => {
   onPause()
 }
 
+
 const setupVideo = () => {
   const video = document.getElementsByTagName("video")[0];
 
@@ -71,19 +72,6 @@ const setupVideo = () => {
   return video
 }
 
-// const video = document.getElementsByTagName("video")[0];
-// video.addEventListener("timeupdate", onTimeUpdate);
-// video.addEventListener("play", onTimeUpdate);
-// video.addEventListener("pause", () => {
-//   state.type = "PAUSED"
-//   onPause()
-// });
-
-// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//   if (message.type === "URL_CHANGED") {
-//     getAndHookVideoElement()
-//   }
-// })
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "PAGE_LOAD_COMPLETE") {
@@ -98,14 +86,3 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
   }
 })
-
-// It doesnt work :(
-// document.addEventListener("onunload", (e) => {
-//   e.preventDefault()
-//   chrome.runtime.sendMessage({ type: "unload", payload: `BWTB unload from ${document.URL}` })
-// })
-
-// document.addEventListener("onbeforeunload", (e) => {
-//   e.preventDefault()
-//   chrome.runtime.sendMessage({ type: "onbeforeunload", payload: `BWTB onbeforeunload from ${document.URL}` })
-// })

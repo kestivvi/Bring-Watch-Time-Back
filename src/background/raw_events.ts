@@ -3,6 +3,7 @@ import { MessageType } from "./message"
 import { getTabFromStorage, setTabToStorage, deleteTabFromStorage } from "./tabs_storage"
 
 
+// Handling messages from the content scripts
 const onMessageHandler = (
     message: any,
     sender: chrome.runtime.MessageSender,
@@ -37,14 +38,32 @@ const onMessageHandler = (
     }
 }
 
+
+// Chrome API handlers
+const onUpdatedTabHandler = (
+    tabId: number,
+    changeInfo: chrome.tabs.TabChangeInfo,
+    tab: chrome.tabs.Tab,
+): void => {
+    setTabToStorage(tab)
+
+    if (changeInfo.status === 'complete') {
+        chrome.tabs.sendMessage(tabId, {
+            type: 'PAGE_LOAD_COMPLETE',
+            url: tab.url
+        })
+    }
+
+}
+
+
+
 const onRemovedTabHandler = async (
     tabId: number,
     removeInfo: chrome.tabs.TabRemoveInfo
 ): Promise<void> => {
 
     const tab = await getTabFromStorage(tabId)
-
-    console.log("TAB_CLOSED", tab)
 
     if (tab === null) {
         console.error("Tab is undefined!")
@@ -60,38 +79,18 @@ const onRemovedTabHandler = async (
     deleteTabFromStorage(tabId)
 }
 
+
+
 const onRemovedWindowHandler = (
     windowId: number
 ): void => {
-    console.log("WINDOW_CLOSED", windowId)
 }
 
-const onUpdatedTabHandler = (
-    tabId: number,
-    changeInfo: chrome.tabs.TabChangeInfo,
-    tab: chrome.tabs.Tab,
-): void => {
-    setTabToStorage(tab)
 
-    if (changeInfo.status === 'complete') {
-        console.log("Page Load Complete", tab.url)
-        chrome.tabs.sendMessage(tabId, {
-            type: 'PAGE_LOAD_COMPLETE',
-            url: tab.url
-        })
-    }
-
-    if (changeInfo.url) {
-        console.log("onUpdatedURL", tab.url)
-        chrome.tabs.sendMessage(tabId, {
-            type: 'URL_CHANGED',
-        })
-    }
-}
 
 export const setupEventListeners = () => {
     chrome.runtime.onMessage.addListener(onMessageHandler)
     chrome.tabs.onRemoved.addListener(onRemovedTabHandler)
+    chrome.tabs.onUpdated.addListener(onUpdatedTabHandler)
     chrome.windows.onRemoved.addListener(onRemovedWindowHandler)
-    chrome.tabs.onUpdated.addListener(onUpdatedTabHandler);
 }

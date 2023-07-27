@@ -1,7 +1,17 @@
+import { setEventToStorage } from "./event_storage";
+
 export const onPlay = (payload: {}, url: string) => {
-    console.log("PLAY", url, payload);
+    setEventToStorage({
+        timestamp: Date.now(),
+        type: "PLAY",
+        url: url,
+    })
 }
 
 export const onPause = (payload: {}, url: string) => {
-    console.log("PAUSE", url, payload);
+    setEventToStorage({
+        timestamp: Date.now(),
+        type: "PAUSE",
+        url: url,
+    })
 }
