@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { EventData, getAllEventsFromStorage } from "./background/event_storage"
+import { EventData, getAllEventsFromStorage } from "../background/event_storage"
+import { convertTimeStampToDateString } from "../utils/time";
 
 const Home = () => {
 
@@ -37,7 +38,7 @@ const Home = () => {
 
       <ul>
         {events.map((event, index) => (
-          <li>{JSON.stringify(event)}</li>
+          <li>{convertTimeStampToDateString(event.timestamp)} | {event.type} | <a href={event.url}>Link</a></li>
         ))}
       </ul>
     </>
