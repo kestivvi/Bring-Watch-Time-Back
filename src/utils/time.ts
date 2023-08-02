@@ -9,7 +9,8 @@ export const convertTimeStampToDateString = (timestamp: number): string => {
     const day = String(dateObj.getDate()).padStart(2, '0');
     const hours = String(dateObj.getHours()).padStart(2, '0');
     const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+    const seconds = String(dateObj.getSeconds()).padStart(2, '0');
 
-    const humanReadableDate = `${year}-${month}-${day} ${hours}:${minutes}`;
+    const humanReadableDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     return humanReadableDate
 }

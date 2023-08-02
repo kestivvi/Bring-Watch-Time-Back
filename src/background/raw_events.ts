@@ -10,7 +10,7 @@ const onMessageHandler = async (
     sendResponse: (response?: any) => void,
 ): Promise<void> => {
 
-    const url = sender.tab?.url
+    let url = sender.tab?.url
 
     if (message.type == MessageType.OPEN_IN_TAB) {
         const x = chrome.runtime.getURL("index.html")
@@ -20,12 +20,16 @@ const onMessageHandler = async (
         });
     }
 
+
+    if (typeof message.payload.url === 'string') {
+        url = message.payload.url
+    }
+
     // Null checks and early returns
     if (url === undefined) {
         console.error("URL is undefined", message, sender)
         return;
     }
-
 
     // Dispatcher via switch statement
     switch (message.type) {
