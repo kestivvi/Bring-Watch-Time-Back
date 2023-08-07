@@ -10,7 +10,7 @@ export const setTabToStorage = async (tab: chrome.tabs.Tab): Promise<void> => {
     if (!tab.id) return;
     const key = tab.id.toString();
     const dataToStore = {
-        [key]: tab,
+        [key]: JSON.parse(JSON.stringify(tab)),
     };
     await chrome.storage.local.set(dataToStore);
 };

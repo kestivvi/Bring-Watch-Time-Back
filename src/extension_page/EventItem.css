@@ -1,0 +1,81 @@
+@import url("https://fonts.googleapis.com/css2?family=Titillium+Web:wght@600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Mukta+Vaani&family=Titillium+Web:wght@600&display=swap");
+
+body {}
+
+.item {
+    font-family: "Titillium Web", sans-serif;
+
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+}
+
+.timeline {
+    width: 200px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.labels {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.timeline-decoration {
+    width: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.timeline-decoration img {
+    width: 22px;
+}
+
+.line {
+    width: 2px;
+    background-color: black;
+    height: 100%;
+}
+
+.content {
+    padding: 15px;
+    display: flex;
+    flex-direction: row;
+}
+
+.content .text {
+    max-width: 400px;
+    padding: 15px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.content img {
+    height: 200px;
+    margin: 0;
+}
+
+.content h1 {
+    margin: 0;
+}
+
+.content h2 {
+    margin: 0;
+    font-family: "Mukta Vaani", sans-serif;
+    font-weight: 400;
+    font-size: 0.9rem;
+}
+
+a {
+    text-decoration: underline;
+    color: black;
+}

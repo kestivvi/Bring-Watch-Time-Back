@@ -6,6 +6,11 @@ let state: State = {
   time: null,
   video: null,
   url: null,
+  block_timestamp: null,
+  block_time: 5000,
+  video_author: null,
+  video_author_url: null,
+  video_title: null,
 }
 
 

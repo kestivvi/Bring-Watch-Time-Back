@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { EventData, getAllEventsFromStorage } from "../background/event_storage"
 import { convertTimeStampToDateString } from "../utils/time";
+import { extractYouTubeVideoId } from "./utils";
+import { EventList } from "./EventList";
 
 const Home = () => {
 
@@ -36,11 +38,7 @@ const Home = () => {
     <>
       HOME
 
-      <ul>
-        {events.map((event, index) => (
-          <li>{convertTimeStampToDateString(event.timestamp)} | {event.type} | <a href={event.url}>Link</a></li>
-        ))}
-      </ul>
+      <EventList events={events} />
     </>
   );
 };
@@ -52,3 +50,5 @@ root.render(
     <Home />
   </React.StrictMode>
 );
+
+

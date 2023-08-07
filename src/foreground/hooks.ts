@@ -12,3 +12,7 @@ export const hookToVideoElement = (
     return video
 }
 
+export const getVideoElement = () => {
+    const video = document.getElementsByTagName("video")[0];
+    return video;
+}

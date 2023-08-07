@@ -10,6 +10,8 @@ const onMessageHandler = async (
     sendResponse: (response?: any) => void,
 ): Promise<void> => {
 
+    console.log("message", message)
+
     let url = sender.tab?.url
 
     if (message.type == MessageType.OPEN_IN_TAB) {
@@ -35,6 +37,7 @@ const onMessageHandler = async (
     switch (message.type) {
 
         case MessageType.PLAY:
+            console.log("onPlayBackground", message)
             onPlay(message.payload, url)
             break;
 
@@ -51,27 +54,39 @@ const onMessageHandler = async (
 
 
 // Chrome API handlers
-const onUpdatedTabHandler = (
+const onUpdatedTabHandler = async (
     tabId: number,
     changeInfo: chrome.tabs.TabChangeInfo,
     tab: chrome.tabs.Tab,
-): void => {
-    setTabToStorage(tab)
+): Promise<void> => {
+
+    if (tab.id === undefined) return
 
     if (changeInfo.status === 'complete') {
-        chrome.tabs.sendMessage(tabId, {
-            type: 'PAGE_LOAD_COMPLETE',
-            url: tab.url
-        })
+        if (tab.url?.includes("watch")) {
+            chrome.tabs.sendMessage(tabId, {
+                type: 'PAGE_LOAD_COMPLETE',
+                url: tab.url
+            })
+        }
     }
 
-    if (changeInfo.status === 'url') {
+    if (changeInfo.url !== undefined) {
+        console.log("onUrlChange")
+        console.log("changeInfo", changeInfo)
+        console.log("tab", tab)
+
+        const oldTab = await getTabFromStorage(tab.id)
+        console.log("oldTab", oldTab)
+
         chrome.tabs.sendMessage(tabId, {
             type: 'URL_CHANGED',
-            url: tab.url
+            url: tab.url,
+            oldUrl: oldTab?.url
         })
     }
 
+    setTabToStorage(tab)
 }
 
 

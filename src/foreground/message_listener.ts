@@ -1,5 +1,5 @@
 import { onPause, onPlay, onTimeUpdate, onUrlChangedEvent } from "./events"
-import { hookToVideoElement } from "./hooks"
+import { getVideoElement, hookToVideoElement } from "./hooks"
 import { State } from "./types"
 
 export const onBackgroundMessage = (message: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void, state: State) => {
@@ -20,30 +20,38 @@ export const onBackgroundMessage = (message: any, sender: chrome.runtime.Message
 }
 
 const onPageLoadComplete = (message: any, state: State) => {
+    console.log("onPageLoadComplete")
 
     if (state.url === message.url) return
+
+    const video = getVideoElement();
+    if (state.video === video) return
+
 
     function onTimeUpdateAdapter(this: HTMLVideoElement, ev: Event) { onTimeUpdate(state, this) }
     function onPlayAdapter(this: HTMLVideoElement, ev: Event) { onPlay(state, this) }
     function onPauseAdapter(this: HTMLVideoElement, ev: Event) { onPause(state, this) }
 
-    state.video?.removeEventListener("timeupdate", onTimeUpdateAdapter)
-    state.video?.removeEventListener("play", onPlayAdapter)
-    state.video?.removeEventListener("pause", onPauseAdapter)
-
-    state.url = message.url
+    if (state.video) {
+        state.video.removeEventListener("timeupdate", onTimeUpdateAdapter)
+        state.video.removeEventListener("play", onPlayAdapter)
+        state.video.removeEventListener("pause", onPauseAdapter)
+    }
 
     state.video = hookToVideoElement(
         onTimeUpdateAdapter,
         onPlayAdapter,
         onPauseAdapter,
     )
+    console.log("onPageLoadComplete found video", state.video)
 
+    console.log("onPageLoadComplete end")
 }
 
 
 const onUrlChanged = (message: any, state: State) => {
-    if (state.type !== "PAUSED" && state.video) {
-        onUrlChangedEvent(state, state.video)
-    }
+    console.log("onUrlChanged")
+    onUrlChangedEvent(state, message.oldUrl, message.url)
+    state.url = message.url
+    console.log("onUrlChanged end")
 }
