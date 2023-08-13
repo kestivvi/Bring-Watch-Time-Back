@@ -1,11 +1,10 @@
 import React from 'react'
 import { convertTimeStampToDateString } from '../utils/time'
-import { extractYouTubeVideoId } from './utils'
-import { ActionData } from '../background/ActionStorage'
 import { EventItem } from './EventItem'
+import { Event } from './hooks/useEvents'
 
 type Props = {
-  events: ActionData[]
+  events: Event[]
 }
 
 export const EventList = ({ events }: Props) => {
@@ -13,14 +12,14 @@ export const EventList = ({ events }: Props) => {
     <ul>
       {events.map((event, index) => (
         <EventItem
-          key={event.timestamp}
-          start={convertTimeStampToDateString(event.timestamp)}
-          end={convertTimeStampToDateString(event.timestamp)}
-          author='Autor'
-          author_url='link'
-          thumbnail_url={`https://i.ytimg.com/vi/${extractYouTubeVideoId(event.url)}/hqdefault.jpg`}
-          title='Tytuł'
-          video_url={event.url}
+          key={event.start_timestamp + event.video_info.videoId}
+          start={convertTimeStampToDateString(event.start_timestamp)}
+          end={convertTimeStampToDateString(event.end_timestamp)}
+          author={event.video_info.channel_name}
+          author_url={event.video_info.channel_url}
+          thumbnail_url={`https://i.ytimg.com/vi/${event.video_info.videoId}/hqdefault.jpg`}
+          title={event.video_info.title}
+          video_url={`https://www.youtube.com/watch?v=${event.video_info.videoId}`}
         />
       ))}
     </ul>

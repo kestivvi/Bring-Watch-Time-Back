@@ -1,6 +1,6 @@
 import { LocalStorageManager } from "./LocalStorageManager";
 
-type VideoInfo = {
+export type VideoInfo = {
     videoId: string
     title: string
     channel_name: string
