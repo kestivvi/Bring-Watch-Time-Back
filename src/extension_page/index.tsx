@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { EventData, getAllEventsFromStorage } from "../background/event_storage"
+import { ActionData, ActionStorage } from "../background/ActionStorage"
 import { convertTimeStampToDateString } from "../utils/time";
 import { extractYouTubeVideoId } from "./utils";
 import { EventList } from "./EventList";
 
 const Home = () => {
 
-  const [events, setEvents] = useState<EventData[]>([])
-
+  const [events, setEvents] = useState<ActionData[]>([])
+  const actionStorage = useRef(new ActionStorage())
 
   useEffect(() => {
 
     const fetchEvents = async () => {
-      const eventsFromStorage = await getAllEventsFromStorage();
+      const eventsFromStorage = await actionStorage.current.getAll();
       setEvents(eventsFromStorage);
     };
 
@@ -38,7 +38,7 @@ const Home = () => {
     <>
       HOME
 
-      <EventList events={events} />
+      <EventList events={events.sort((a, b) => b.timestamp - a.timestamp)} />
     </>
   );
 };

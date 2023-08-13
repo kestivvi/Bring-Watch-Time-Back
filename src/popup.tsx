@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { EventData, getAllEventsFromStorage } from "./background/event_storage"
+import { ActionData, ActionStorage } from "./background/ActionStorage"
 
 const Popup = () => {
   const [count, setCount] = useState(0);
   const [currentURL, setCurrentURL] = useState<string>();
-  const [events, setEvents] = useState<EventData[]>([])
+  const [events, setEvents] = useState<ActionData[]>([])
+
+  const actionStorage = useRef(new ActionStorage())
+
 
   useEffect(() => {
     chrome.action.setBadgeText({ text: count.toString() });
@@ -17,7 +20,7 @@ const Popup = () => {
     });
 
     const fetchEvents = async () => {
-      const eventsFromStorage = await getAllEventsFromStorage();
+      const eventsFromStorage = await actionStorage.current.getAll();
       setEvents(eventsFromStorage);
     };
 

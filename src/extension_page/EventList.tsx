@@ -1,11 +1,11 @@
 import React from 'react'
 import { convertTimeStampToDateString } from '../utils/time'
 import { extractYouTubeVideoId } from './utils'
-import { EventData } from '../background/event_storage'
+import { ActionData } from '../background/ActionStorage'
 import { EventItem } from './EventItem'
 
 type Props = {
-  events: EventData[]
+  events: ActionData[]
 }
 
 export const EventList = ({ events }: Props) => {
