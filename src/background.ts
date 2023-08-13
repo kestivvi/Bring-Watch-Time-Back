@@ -1,3 +1,3 @@
-import { setupEventListeners } from './background/raw_events'
+import { setupEventListeners } from "./background/ActionReceiver";
 
 setupEventListeners();

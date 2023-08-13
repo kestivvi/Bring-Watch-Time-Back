@@ -1,27 +1,23 @@
 import { MessageType } from "../background/message"
-import { State } from "./types"
+import { State } from "./state"
 
 // TODO: Extract to config
 const timeDelta = 1000 // ms
 
 export const onTimeUpdate = (state: State, video: HTMLVideoElement) => {
     check(state, video)
-    console.log("onTimeUpdate")
 }
 
 export const onPlay = (state: State, video: HTMLVideoElement) => {
     check(state, video)
-    console.log("onPlay")
 }
 
 export const onPause = (state: State, video: HTMLVideoElement) => {
     check(state, video)
-    console.log("onPause")
 }
 
 export const onUrlChangedEvent = (state: State, oldUrl: string, newUrl: string) => {
     if (!newUrl.includes("watch")) {
-        console.log("ustawienie blocka")
         state.block_timestamp = Date.now()
     }
 
@@ -33,12 +29,7 @@ export const onUrlChangedEvent = (state: State, oldUrl: string, newUrl: string) 
 
 const check = (state: State, video: HTMLVideoElement) => {
 
-    // if (video.paused === true) return
-
-    console.log("state from check", state)
-
     if (state.block_timestamp && state.block_time && Date.now() - state.block_time < state.block_timestamp) {
-        console.log("block")
         return
     }
 
@@ -68,7 +59,6 @@ const recheck = (state: State, video: HTMLVideoElement) => {
 // Communication to the background process
 
 const sendPlay = (url: string | undefined) => {
-    console.log("send play")
     chrome.runtime.sendMessage({ type: MessageType.PLAY, payload: { url } })
 };
 

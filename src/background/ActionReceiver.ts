@@ -1,4 +1,4 @@
-import { onPause, onPlay } from "./events"
+import { onPause, onPlay } from "./ActionHandler"
 import { MessageType } from "./message"
 import { getTabFromStorage, setTabToStorage, deleteTabFromStorage } from "./tabs_storage"
 
@@ -10,16 +10,10 @@ const onMessageHandler = async (
     sendResponse: (response?: any) => void,
 ): Promise<void> => {
 
-    console.log("message", message)
-
     let url = sender.tab?.url
 
     if (message.type == MessageType.OPEN_IN_TAB) {
-        const x = chrome.runtime.getURL("index.html")
-        console.log("undefined url", x)
-        await chrome.tabs.create({
-            url: x,
-        });
+        await chrome.tabs.create({ url: chrome.runtime.getURL("index.html") });
     }
 
 
@@ -37,7 +31,6 @@ const onMessageHandler = async (
     switch (message.type) {
 
         case MessageType.PLAY:
-            console.log("onPlayBackground", message)
             onPlay(message.payload, url)
             break;
 
@@ -72,13 +65,7 @@ const onUpdatedTabHandler = async (
     }
 
     if (changeInfo.url !== undefined) {
-        console.log("onUrlChange")
-        console.log("changeInfo", changeInfo)
-        console.log("tab", tab)
-
         const oldTab = await getTabFromStorage(tab.id)
-        console.log("oldTab", oldTab)
-
         chrome.tabs.sendMessage(tabId, {
             type: 'URL_CHANGED',
             url: tab.url,

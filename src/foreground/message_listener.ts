@@ -1,6 +1,6 @@
-import { onPause, onPlay, onTimeUpdate, onUrlChangedEvent } from "./events"
+import { onPause, onPlay, onTimeUpdate, onUrlChangedEvent } from "./actions"
 import { getVideoElement, hookToVideoElement } from "./hooks"
-import { State } from "./types"
+import { State } from "./state"
 
 export const onBackgroundMessage = (message: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void, state: State) => {
 
@@ -20,7 +20,6 @@ export const onBackgroundMessage = (message: any, sender: chrome.runtime.Message
 }
 
 const onPageLoadComplete = (message: any, state: State) => {
-    console.log("onPageLoadComplete")
 
     if (state.url === message.url) return
 
@@ -43,15 +42,9 @@ const onPageLoadComplete = (message: any, state: State) => {
         onPlayAdapter,
         onPauseAdapter,
     )
-    console.log("onPageLoadComplete found video", state.video)
-
-    console.log("onPageLoadComplete end")
 }
 
-
 const onUrlChanged = (message: any, state: State) => {
-    console.log("onUrlChanged")
     onUrlChangedEvent(state, message.oldUrl, message.url)
     state.url = message.url
-    console.log("onUrlChanged end")
 }

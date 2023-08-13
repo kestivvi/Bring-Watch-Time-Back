@@ -1,5 +1,5 @@
 import { onBackgroundMessage } from "./foreground/message_listener"
-import { State } from "./foreground/types"
+import { State } from "./foreground/state"
 
 let state: State = {
   type: null,

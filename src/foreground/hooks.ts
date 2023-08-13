@@ -3,7 +3,7 @@ export const hookToVideoElement = (
     onPlay: (this: HTMLVideoElement, ev: Event) => any,
     onPause: (this: HTMLVideoElement, ev: Event) => any,
 ): HTMLVideoElement => {
-    const video = document.getElementsByTagName("video")[0];
+    const video = getVideoElement();
 
     video.addEventListener("timeupdate", onTimeUpdate);
     video.addEventListener("play", onPlay);
